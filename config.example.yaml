@@ -1,0 +1,22 @@
+oghma:
+  source: /home/like/repos/simulation_toykits/simulation_core/assets/database
+
+freesnell:
+  scm: /home/like/repos/freesnell-install/bin/scm
+  rwb: /home/like/repos/freesnell-build/FreeSnell/nk.rwb
+
+virtuallab:
+  # Primary: direct catalog read (Windows + pythonnet)
+  virtuallab_dir: "C:\\Program Files\\Wyrowski Photonics\\VirtualLab Fusion (7.5.0) Trial"
+  # From WSL: run export on Windows via SSH/SCP (see export_via_windows.sh)
+  remote_via_windows: false
+  windows_ssh:
+    host: auto          # cmd.exe ipconfig: prefer vEthernet (WSL) IPv4
+    user: like
+    remote_dir: /c/Users/like/AppData/Local/Temp/virtuallab_export
+  # Fallback: csv_export from export_via_windows.sh (meta.json + optional CSV tables)
+  csv_source: vl/csv_export/materials
+  index_csv: vl/csv_export/materials_export/index.csv
+
+refractive_index_info:
+  sha: a66ef8805cdb200973fc7ae9181587e1d89d14eb
