@@ -14,19 +14,20 @@ ROOT = Path(__file__).resolve().parent
 
 SUBMODULES = {
     "refractive_index_info": {
-        "script": "rii/sync.py",
+        "script": "rii/update_current_database.py",
         "args": [],
     },
     "oghma": {
-        "script": "og/export.py",
-        "args": ["--source"],
-        "config_key": "oghma.source",
+        "script": "og/update_current_database.py",
+        "args": [],
     },
     "freesnell": {
-        "script": "fs/export.py",
+        "script": "fs/update_current_database.py",
+        "args": ["--scm", "--rwb"],
+        "config_keys": ["freesnell.scm", "freesnell.rwb"],
     },
     "virtuallab": {
-        "script": "vl/export.py",
+        "script": "vl/update_current_database.py",
         "args": ["--virtuallab-dir", "--csv-source", "--index-csv"],
         "config_keys": [
             "virtuallab.virtuallab_dir",
@@ -82,7 +83,7 @@ def git_submodule_update(pull: bool) -> int:
     return result.returncode
 
 
-def run_script(name: str, spec: dict, cfg: dict) -> int:
+def run_script(name: str, spec: dict, cfg: dict, config_path: Path) -> int:
     script = ROOT / spec["script"]
     if not script.is_file():
         print(
@@ -99,23 +100,34 @@ def run_script(name: str, spec: dict, cfg: dict) -> int:
         if sha:
             cmd.extend(["--sha", str(sha)])
     elif name == "oghma":
-        source = nested_get(cfg, "oghma.source")
-        if source:
-            cmd.extend(["--source", str(source)])
-        else:
-            print("warning: oghma.source not set in config; using export.py defaults", file=sys.stderr)
+        if nested_get(cfg, "oghma.force"):
+            cmd.append("--force")
+    elif name == "freesnell":
+        scm = nested_get(cfg, "freesnell.scm")
+        rwb = nested_get(cfg, "freesnell.rwb")
+        if scm:
+            cmd.extend(["--scm", str(scm)])
+        if rwb:
+            cmd.extend(["--rwb", str(rwb)])
     elif name == "virtuallab":
+        vl_dir = nested_get(cfg, "virtuallab.virtuallab_dir")
         remote_via_windows = nested_get(cfg, "virtuallab.remote_via_windows")
-        if remote_via_windows and sys.platform != "win32":
+        # WSL/Linux + virtuallab_dir: scp ps1 → Windows CSV → WSL staging → YAML
+        use_wsl_remote = (
+            sys.platform != "win32"
+            and vl_dir
+            and remote_via_windows is not False
+        )
+        if use_wsl_remote:
             remote_script = ROOT / "vl/export_via_windows.sh"
             if not remote_script.is_file():
                 print(f"error: remote export script missing: {remote_script}", file=sys.stderr)
                 return 1
             config_arg = []
-            if args.config.resolve().is_file():
-                config_arg = ["--config", str(args.config.resolve())]
+            if config_path.is_file():
+                config_arg = ["--config", str(config_path)]
             cmd = ["bash", str(remote_script), *config_arg]
-            print(f"\n=== update: {name} (via Windows SSH) ===")
+            print(f"\n=== update: {name} (WSL → Windows SSH → CSV → YAML) ===")
             print(" ".join(cmd))
             try:
                 result = subprocess.run(cmd, cwd=ROOT, check=False)
@@ -129,10 +141,18 @@ def run_script(name: str, spec: dict, cfg: dict) -> int:
                 )
             return result.returncode
 
-        vl_dir = nested_get(cfg, "virtuallab.virtuallab_dir")
         csv_source = nested_get(cfg, "virtuallab.csv_source")
         index_csv = nested_get(cfg, "virtuallab.index_csv")
-        if vl_dir:
+        if remote_via_windows is False:
+            if csv_source:
+                cmd.extend(["--csv-source", str(csv_source)])
+            elif vl_dir:
+                print(
+                    "warning: virtuallab.remote_via_windows=false on WSL; "
+                    "set csv_source or enable remote export",
+                    file=sys.stderr,
+                )
+        elif vl_dir:
             cmd.extend(["--virtuallab-dir", str(vl_dir)])
         elif csv_source:
             cmd.extend(["--csv-source", str(csv_source)])
@@ -141,7 +161,7 @@ def run_script(name: str, spec: dict, cfg: dict) -> int:
         if not vl_dir and not csv_source:
             print(
                 "warning: virtuallab.virtuallab_dir / csv_source not set; "
-                "using export.py defaults",
+                "using update_current_database.py defaults",
                 file=sys.stderr,
             )
 
@@ -206,7 +226,7 @@ def main() -> int:
     names = args.only or list(SUBMODULES.keys())
     failures: list[str] = []
     for name in names:
-        rc = run_script(name, SUBMODULES[name], cfg)
+        rc = run_script(name, SUBMODULES[name], cfg, config_path)
         if rc != 0:
             failures.append(name)
             if not args.continue_on_error:

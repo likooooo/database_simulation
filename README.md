@@ -8,10 +8,10 @@
 
 | 子模块 | 说明 | 脚本 |
 |--------|------|------|
-| `og` | Oghma 原生材料 + 光谱 | `export.py` |
-| `rii` | refractiveindex.info 官方数据 | `sync.py` |
-| `fs` | FreeSnell nk.rwb | `export.py` |
-| `vl` | VirtualLab 材料 | `export.py` |
+| `og` | Oghma 原生材料 + 光谱 | `update_current_database.py` |
+| `rii` | refractiveindex.info 官方数据 | `update_current_database.py` |
+| `fs` | FreeSnell nk.rwb | `update_current_database.py` |
+| `vl` | VirtualLab 材料 | `update_current_database.py` |
 
 ## 安装
 
@@ -47,11 +47,13 @@ python update_all.py --only oghma freesnell
 ## 单独运行
 
 ```bash
-python og/export.py --source /path/to/assets/database
-python fs/export.py
-python vl/export.py --csv-source /path/to/virtuallab_materials/materials
-python rii/sync.py
+python og/update_current_database.py
+python fs/update_current_database.py --scm /path/to/scm --rwb /path/to/nk.rwb
+python vl/update_current_database.py --csv-source /path/to/materials
+python rii/update_current_database.py
 ```
+
+各子模块脚本自包含，不依赖父仓库 `common/`；路径与选项由 CLI 或 `update_all.py` 传入。
 
 ## 输出格式
 
@@ -68,7 +70,3 @@ DATA:
 ```
 
 光谱数据（og）导出为 `{name}.yml`，`type: tabulated spectra`（波长 µm + 强度两列）。
-
-## 共享库
-
-`common/` 提供 CSV 读取、波长并集 cubic 插值、α→k 转换、YAML 写出及警告日志。

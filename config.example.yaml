@@ -1,15 +1,15 @@
 oghma:
-  source: /home/like/repos/simulation_toykits/simulation_core/assets/database
+  force: false
 
 freesnell:
   scm: /home/like/repos/freesnell-install/bin/scm
   rwb: /home/like/repos/freesnell-build/FreeSnell/nk.rwb
 
 virtuallab:
-  # Primary: direct catalog read (Windows + pythonnet)
+  # Windows path; WSL mount (/mnt/c/...) is derived automatically
   virtuallab_dir: "C:\\Program Files\\Wyrowski Photonics\\VirtualLab Fusion (7.5.0) Trial"
-  # From WSL: run export on Windows via SSH/SCP (see export_via_windows.sh)
-  remote_via_windows: false
+  # On WSL: auto scp ps1 → Windows CSV → WSL staging → YAML (set false to use csv_source only)
+  remote_via_windows: true
   windows_ssh:
     host: auto          # cmd.exe ipconfig: prefer vEthernet (WSL) IPv4
     user: like
