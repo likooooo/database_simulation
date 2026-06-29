@@ -21,6 +21,11 @@ SUBMODULES = {
         "script": "og/update_current_database.py",
         "args": [],
     },
+    "oghma_projects": {
+        "script": "og/export_oghma_projects.sh",
+        "args": [],
+        "config_keys": ["oghma_projects.source_dir"],
+    },
     "freesnell": {
         "script": "fs/update_current_database.py",
         "args": ["--scm", "--rwb"],
@@ -102,6 +107,36 @@ def run_script(name: str, spec: dict, cfg: dict, config_path: Path) -> int:
     elif name == "oghma":
         if nested_get(cfg, "oghma.force"):
             cmd.append("--force")
+    elif name == "oghma_projects":
+        remote_via_windows = nested_get(cfg, "oghma_projects.remote_via_windows")
+        if sys.platform != "win32" and remote_via_windows is not False:
+            remote_script = ROOT / "og/export_oghma_projects.sh"
+            if not remote_script.is_file():
+                print(f"error: remote export script missing: {remote_script}", file=sys.stderr)
+                return 1
+            config_arg = []
+            if config_path.is_file():
+                config_arg = ["--config", str(config_path)]
+            cmd = ["bash", str(remote_script), *config_arg]
+            print(f"\n=== update: {name} (WSL → Windows SSH/scp → OneDrive → database/og/oghma_projects) ===")
+            print(" ".join(cmd))
+            try:
+                result = subprocess.run(cmd, cwd=ROOT, check=False)
+            except OSError as exc:
+                print(f"error: failed to run {name}: {exc}", file=sys.stderr)
+                return 1
+            if result.returncode != 0:
+                print(
+                    f"error: {name} remote sync failed with exit code {result.returncode}",
+                    file=sys.stderr,
+                )
+            return result.returncode
+        print(
+            "error: oghma_projects sync requires WSL with remote_via_windows "
+            "(or run og/export_oghma_projects.sh manually)",
+            file=sys.stderr,
+        )
+        return 1
     elif name == "freesnell":
         scm = nested_get(cfg, "freesnell.scm")
         rwb = nested_get(cfg, "freesnell.rwb")

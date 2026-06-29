@@ -1,6 +1,15 @@
 oghma:
   force: false
 
+oghma_projects:
+  # Windows OneDrive path; WSL mount (/mnt/c/...) is derived automatically
+  source_dir: "C:\\Users\\like\\OneDrive\\oghma_projects"
+  # On WSL: scp OneDrive/oghma_projects → database/og/oghma_projects (faster than /mnt/c)
+  remote_via_windows: true
+  windows_ssh:
+    host: auto          # cmd.exe ipconfig: prefer vEthernet (WSL) IPv4
+    user: like
+
 freesnell:
   scm: /home/like/repos/freesnell-install/bin/scm
   rwb: /home/like/repos/freesnell-build/FreeSnell/nk.rwb
