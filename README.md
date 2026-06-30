@@ -12,6 +12,7 @@
 | `rii` | refractiveindex.info 官方数据 | `update_current_database.py` |
 | `fs` | FreeSnell nk.rwb | `update_current_database.py` |
 | `vl` | VirtualLab 材料 | `update_current_database.py` |
+| `gf` | GranFilm SOPRA .nk | `update_current_database.py` |
 
 ## 安装
 
@@ -49,6 +50,7 @@ python update_all.py --only oghma freesnell
 ```bash
 python og/update_current_database.py
 python fs/update_current_database.py --scm /path/to/scm --rwb /path/to/nk.rwb
+python gf/update_current_database.py
 python vl/update_current_database.py --csv-source /path/to/materials
 python rii/update_current_database.py
 ```

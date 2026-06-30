@@ -29,3 +29,9 @@ virtuallab:
 
 refractive_index_info:
   sha: a66ef8805cdb200973fc7ae9181587e1d89d14eb
+
+granfilm:
+  download_url: https://web.phys.ntnu.no/~ingves/Software/GranFilm/Current/Download/Dielectric.tgz
+  # Optional: use local GranFilm tree when Dielectric/ exists (skipped when force=true)
+  granfilm_dir: /home/like/repos/GranFilm-v1.0
+  force: false

@@ -27,6 +27,10 @@ DATABASES = {
         "subdir": "vl",
         "data_dirs": ("materials",),
     },
+    "granfilm": {
+        "subdir": "gf",
+        "data_dirs": ("materials", "finite_size"),
+    },
 }
 
 

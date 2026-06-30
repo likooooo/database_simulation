@@ -10,3 +10,6 @@
 [submodule "rii"]
 	path = rii
 	url = git@github.com:likooooo/database_refractive_index_info.git
+[submodule "gf"]
+	path = gf
+	url = git@github.com:likooooo/database_granfilm.git

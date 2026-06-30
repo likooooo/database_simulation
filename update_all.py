@@ -40,6 +40,15 @@ SUBMODULES = {
             "virtuallab.index_csv",
         ],
     },
+    "granfilm": {
+        "script": "gf/update_current_database.py",
+        "args": ["--download-url", "--granfilm-dir", "--dielectric-dir"],
+        "config_keys": [
+            "granfilm.download_url",
+            "granfilm.granfilm_dir",
+            "granfilm.force",
+        ],
+    },
 }
 
 
@@ -144,6 +153,16 @@ def run_script(name: str, spec: dict, cfg: dict, config_path: Path) -> int:
             cmd.extend(["--scm", str(scm)])
         if rwb:
             cmd.extend(["--rwb", str(rwb)])
+    elif name == "granfilm":
+        url = nested_get(cfg, "granfilm.download_url")
+        gf_dir = nested_get(cfg, "granfilm.granfilm_dir")
+        force = nested_get(cfg, "granfilm.force")
+        if url:
+            cmd.extend(["--download-url", str(url)])
+        if gf_dir:
+            cmd.extend(["--granfilm-dir", str(gf_dir)])
+        if force:
+            cmd.append("--force")
     elif name == "virtuallab":
         vl_dir = nested_get(cfg, "virtuallab.virtuallab_dir")
         remote_via_windows = nested_get(cfg, "virtuallab.remote_via_windows")
