@@ -21,11 +21,11 @@ SUBMODULES = {
         "script": "og/update_current_database.py",
         "args": [],
     },
-    "oghma_projects": {
-        "script": "og/export_oghma_projects.sh",
-        "args": [],
-        "config_keys": ["oghma_projects.source_dir"],
-    },
+    # "oghma_projects": {
+    #     "script": "og/export_oghma_projects.sh",
+    #     "args": [],
+    #     "config_keys": ["oghma_projects.source_dir"],
+    # },
     "freesnell": {
         "script": "fs/update_current_database.py",
         "args": ["--scm", "--rwb"],
