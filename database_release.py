@@ -31,6 +31,10 @@ DATABASES = {
         "subdir": "gf",
         "data_dirs": ("materials", "finite_size"),
     },
+    "openfilters": {
+        "subdir": "of",
+        "data_dirs": ("materials",),
+    },
 }
 
 

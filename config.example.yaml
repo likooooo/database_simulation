@@ -35,3 +35,6 @@ granfilm:
   # Optional: use local GranFilm tree when Dielectric/ exists (skipped when force=true)
   granfilm_dir: /home/like/repos/GranFilm-v1.0
   force: false
+
+openfilters:
+  openfilters_dir: /home/like/repos/OpenFilters

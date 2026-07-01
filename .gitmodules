@@ -13,3 +13,6 @@
 [submodule "gf"]
 	path = gf
 	url = git@github.com:likooooo/database_granfilm.git
+[submodule "of"]
+	path = of
+	url = git@github.com:likooooo/database_openfilters.git

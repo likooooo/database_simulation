@@ -49,6 +49,11 @@ SUBMODULES = {
             "granfilm.force",
         ],
     },
+    "openfilters": {
+        "script": "of/update_current_database.py",
+        "args": ["--openfilters-dir"],
+        "config_keys": ["openfilters.openfilters_dir"],
+    },
 }
 
 
@@ -163,6 +168,10 @@ def run_script(name: str, spec: dict, cfg: dict, config_path: Path) -> int:
             cmd.extend(["--granfilm-dir", str(gf_dir)])
         if force:
             cmd.append("--force")
+    elif name == "openfilters":
+        of_dir = nested_get(cfg, "openfilters.openfilters_dir")
+        if of_dir:
+            cmd.extend(["--openfilters-dir", str(of_dir)])
     elif name == "virtuallab":
         vl_dir = nested_get(cfg, "virtuallab.virtuallab_dir")
         remote_via_windows = nested_get(cfg, "virtuallab.remote_via_windows")
